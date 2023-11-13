@@ -10,4 +10,4 @@ The transform then gets published to the topic /tf_static as a transformStamped 
   ros2 service call /get_chessboard_transform messages_artur/srv/GetChessboardTransform
 
 # Notes
-Needs ROS2 package messages_artur!
+Needs ROS2 package [messages_artur](https://github.com/avonruffer/messages_artur)!
