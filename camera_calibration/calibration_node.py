@@ -12,6 +12,9 @@ import cv2
 import numpy as np
 
 
+# Create a ZED camera object
+zed = sl.Camera()
+
 # Define the chessboard parameters
 CHESSBOARD_SIZE = (8, 11)  # Number of inner corners on the chessboard
 SQUARE_SIZE = 0.03  # Size of each square in meters
@@ -105,6 +108,8 @@ class CameraChessboardNode(Node):
         # Capture frame, calculate transform
         try:
             # Code pasted from get_transform_matrix.py
+            
+
 
             # Set initialization parameters
             init_params = sl.InitParameters()
@@ -113,9 +118,11 @@ class CameraChessboardNode(Node):
             init_params.depth_mode = sl.DEPTH_MODE.NONE  # No depth for calibration
 
             # Open the camera
+            self.get_logger().info('Opening camera...')
             err = zed.open(init_params)
             if err != sl.ERROR_CODE.SUCCESS:
                 exit(1)
+            self.get_logger().info('Camera opened.')
 
             # Capture frame
             runtime_parameters = sl.RuntimeParameters()
@@ -129,7 +136,7 @@ class CameraChessboardNode(Node):
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             mtx, dist_coeffs = get_intrinsics()
-            rvecs, tvecs, transform_matrix = get_static_transform(gray, mtx, dist_coeffs, True)
+            rvecs, tvecs, transform_matrix = get_static_transform(gray, mtx, dist_coeffs, False)
 
             # Convert transform_matrix to a TransformStamped message
             transform_stamped = TransformStamped()
@@ -153,7 +160,7 @@ class CameraChessboardNode(Node):
             # Broadcast static transform
             self.br.sendTransform(transform_stamped)
             self.get_logger().info('Static Transform broadcasted. Calculated transformation matrix:')
-            self.get_logger().info(transform_matrix)
+            self.get_logger().info('\n' + np.array2string(transform_matrix))
             response.success = True
             return response
 
